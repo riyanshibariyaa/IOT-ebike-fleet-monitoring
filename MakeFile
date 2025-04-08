@@ -1,0 +1,74 @@
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic -I./src
+
+# Poco library
+POCO_LIBS = -lPocoNet -lPocoFoundation -lPocoJSON -lPocoUtil
+
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
+DATA_DIR = data
+WEB_DIR = $(BUILD_DIR)/web
+
+# Source files
+EBIKE_CLIENT_SRC = $(SRC_DIR)/ebikeClient.cpp
+EBIKE_GATEWAY_SRC = $(SRC_DIR)/ebikeGateway.cpp
+GENERATE_EBIKE_FILE_SRC = $(SRC_DIR)/util/generateEBikeFile.cpp
+SIM_SRCS = $(SRC_DIR)/sim/in.cpp $(SRC_DIR)/sim/socket.cpp
+WEB_SRCS = $(SRC_DIR)/web/WebServer.cpp $(SRC_DIR)/web/EbikeHandler.cpp
+
+# Object files
+SIM_OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SIM_SRCS))
+WEB_OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(WEB_SRCS))
+
+# Target executables
+EBIKE_CLIENT = ebikeClient
+EBIKE_GATEWAY = ebikeGateway
+GENERATE_EBIKE_FILE = generateEBikeFile
+
+# All targets
+all: directories $(EBIKE_CLIENT) $(EBIKE_GATEWAY) $(GENERATE_EBIKE_FILE)
+
+# Create necessary directories
+directories:
+	mkdir -p $(BUILD_DIR)/sim
+	mkdir -p $(BUILD_DIR)/web
+	mkdir -p $(DATA_DIR)
+
+# Compile simulation objects
+$(BUILD_DIR)/sim/%.o: $(SRC_DIR)/sim/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# Compile web objects
+$(BUILD_DIR)/web/%.o: $(SRC_DIR)/web/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+# Compile ebikeClient
+$(EBIKE_CLIENT): $(EBIKE_CLIENT_SRC) $(SIM_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compile ebikeGateway
+$(EBIKE_GATEWAY): $(EBIKE_GATEWAY_SRC) $(SIM_OBJS) $(WEB_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(POCO_LIBS)
+
+# Compile generateEBikeFile
+$(GENERATE_EBIKE_FILE): $(GENERATE_EBIKE_FILE_SRC)
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+# Generate e-bike data files
+generate_data: $(GENERATE_EBIKE_FILE)
+	./$(GENERATE_EBIKE_FILE) $(DATA_DIR)/sim-eBike-1.csv 10
+	./$(GENERATE_EBIKE_FILE) $(DATA_DIR)/sim-eBike-2.csv 10
+	./$(GENERATE_EBIKE_FILE) $(DATA_DIR)/sim-eBike-3.csv 10
+	./$(GENERATE_EBIKE_FILE) $(DATA_DIR)/sim-eBike-4.csv 10
+
+# Clean build artifacts
+clean:
+	rm -rf $(BUILD_DIR)/*
+	rm -f $(EBIKE_CLIENT) $(EBIKE_GATEWAY) $(GENERATE_EBIKE_FILE)
+
+# Clean and rebuild
+rebuild: clean all
+
+.PHONY: all directories clean rebuild generate_data
