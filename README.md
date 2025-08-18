@@ -335,7 +335,7 @@ We welcome contributions! Please follow these steps:
 - **Documentation**: [Wiki](https://github.com/yourusername/iot-ebike-monitoring/wiki)
 - **Issues**: [GitHub Issues](https://github.com/yourusername/iot-ebike-monitoring/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/yourusername/iot-ebike-monitoring/discussions)
-- **Email**: support@ebike-monitoring.com
+
 
 ---
 
