@@ -324,7 +324,6 @@ We welcome contributions! Please follow these steps:
 
 ## 🙏 Acknowledgments
 
-- **UWE Bristol** - School of Computing and Creative Technologies
 - **POCO Project** - Excellent C++ networking libraries
 - **OpenStreetMap** - Open-source mapping data
 - **Catch2** - Modern C++ testing framework
